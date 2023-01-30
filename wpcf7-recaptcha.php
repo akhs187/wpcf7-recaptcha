@@ -1,10 +1,10 @@
 <?php
 /**
  * Plugin Name: Contact Form 7 - reCaptcha v2
- * Description: ReCaptcha v2 Fix for Contact Form 7 5.1 and later.
+ * Description: ReCaptcha v2 for Contact Form 7 5.1 and later.
  * Version: 1.2.0
- * Author: IQComputing
- * Author URI: http://www.iqcomputing.com/
+ * Author: Digital Solution
+ * Author URI: https://www.digitalsolution/
  * License: GPL2
  * Text Domain: wpcf7-recaptcha
  */
@@ -14,9 +14,9 @@ defined( 'ABSPATH' ) or die( 'You cannot be here.' );
 
 
 /**
- * IQComputing Contact Form 7 reCaptcha Fix, Deity Class
+ * Digital Solution Contact Form 7 reCaptcha v2, Deity Class
  */
-Class IQFix_WPCF7_Deity {
+Class digisol_WPCF7_Deity {
 
 	public static $version = '1.2.0';
 
@@ -62,7 +62,7 @@ Class IQFix_WPCF7_Deity {
 	 */
 	private function include_files() {
 
-		$selection = WPCF7::get_option( 'iqfix_recaptcha' );
+		$selection = WPCF7::get_option( 'digisol_recaptcha' );
 
 		// Prevent update from v2 to v3 notice.
 		WPCF7::update_option( 'recaptcha_v2_v3_warning', false );
@@ -82,24 +82,24 @@ Class IQFix_WPCF7_Deity {
 	
 	/**
 	 * Save the reCaptcha settings from our options page
-	 * @see IQFix_WPCF7_Deity::display_recaptcha_version_subpage()
+	 * @see digisol_WPCF7_Deity::display_recaptcha_version_subpage()
 	 * 
 	 * @return Boolean
 	 */
 	private function save_recaptcha_settings() {
 		
 		// Form hasn't POSTed, return early
-		if( ! isset( $_POST, $_POST['iqfix_recaptcha_version'], $_POST['iqfix_wpcf7_submit'] ) ) {
+		if( ! isset( $_POST, $_POST['digisol_recaptcha_version'], $_POST['digisol_wpcf7_submit'] ) ) {
 			return false;
 		}
 		
 		// Ensure we have and can verify our nonce. IF not, return early
-		if( ! ( ! empty( $_POST['iqfix_wpcf7_nonce'] ) && wp_verify_nonce( $_POST['iqfix_wpcf7_nonce'], 'iqfix_wpcf7_vers_select' ) ) ) {
+		if( ! ( ! empty( $_POST['digisol_wpcf7_nonce'] ) && wp_verify_nonce( $_POST['digisol_wpcf7_nonce'], 'digisol_wpcf7_vers_select' ) ) ) {
 			return false;
 		}
 			
-		$selection 	= intval( $_POST['iqfix_recaptcha_version'] );
-		$source		= ( isset( $_POST, $_POST['iqfix_recaptcha_source'] ) ) ? sanitize_text_field( $_POST['iqfix_recaptcha_source'] ) : 'google.com';
+		$selection 	= intval( $_POST['digisol_recaptcha_version'] );
+		$source		= ( isset( $_POST, $_POST['digisol_recaptcha_source'] ) ) ? sanitize_text_field( $_POST['digisol_recaptcha_source'] ) : 'google.com';
 		$source		= self::verify_recaptcha_source( $source );
 		
 		// Save Network Settings
@@ -108,18 +108,18 @@ Class IQFix_WPCF7_Deity {
 			$sitekey 	= trim( $_POST['wpcf7_recaptcha_network']['sitekey'] );
 			$secretkey 	= trim( $_POST['wpcf7_recaptcha_network']['secretkey'] );
 			
-			update_site_option( 'network_iqfix_recaptcha', array(
+			update_site_option( 'network_digisol_recaptcha', array(
 				'sitekey' 			=> $sitekey,
 				'secret'			=> $secretkey,
-				'iqfix_recaptcha'	=> $selection,
+				'digisol_recaptcha'	=> $selection,
 				'recaptcha_source'	=> $source,
 			) );
 		
 		// Save Regular WPCF7 Settings
 		} else {
 		
-			WPCF7::update_option( 'iqfix_recaptcha', 		$selection 	);
-			WPCF7::update_option( 'iqfix_recaptcha_source', $source 	);
+			WPCF7::update_option( 'digisol_recaptcha', 		$selection 	);
+			WPCF7::update_option( 'digisol_recaptcha_source', $source 	);
 			
 		}
 		
@@ -203,8 +203,8 @@ Class IQFix_WPCF7_Deity {
 		// Grab Network Settings
 		if( is_network_admin() ) {
 			
-			$network_options = get_site_option( 'network_iqfix_recaptcha' );
-			$selection		 = ( ! empty( $network_options['iqfix_recaptcha'] ) ) 	? $network_options['iqfix_recaptcha'] 	: '';
+			$network_options = get_site_option( 'network_digisol_recaptcha' );
+			$selection		 = ( ! empty( $network_options['digisol_recaptcha'] ) ) 	? $network_options['digisol_recaptcha'] 	: '';
 			$source			 = ( ! empty( $network_options['recaptcha_source'] ) )	? $network_options['recaptcha_source']	: '';
 			$sitekey		 = ( ! empty( $network_options['sitekey'] ) ) 			? $network_options['sitekey'] 			: '';
 			$secretkey		 = ( ! empty( $network_options['secret'] ) ) 			? $network_options['secret'] 			: '';
@@ -212,8 +212,8 @@ Class IQFix_WPCF7_Deity {
 		// Grab Site Settings
 		} else {
 			
-			$selection 	= WPCF7::get_option( 'iqfix_recaptcha' );
-			$source 	= WPCF7::get_option( 'iqfix_recaptcha_source' );
+			$selection 	= WPCF7::get_option( 'digisol_recaptcha' );
+			$source 	= WPCF7::get_option( 'digisol_recaptcha_source' );
 			
 		}
 
@@ -256,18 +256,18 @@ Class IQFix_WPCF7_Deity {
 				?>
 
 				<form method="post">
-					<?php wp_nonce_field( 'iqfix_wpcf7_vers_select', 'iqfix_wpcf7_nonce' ); ?>
+					<?php wp_nonce_field( 'digisol_wpcf7_vers_select', 'digisol_wpcf7_nonce' ); ?>
 					
-					<label for="iqfix_recaptcha_version"><strong><?php esc_html_e( 'Select reCaptcha Usage' ); ?>:</strong></label><br />
-					<select id="iqfix_recaptcha_version" name="iqfix_recaptcha_version">
+					<label for="digisol_recaptcha_version"><strong><?php esc_html_e( 'Select reCaptcha Usage' ); ?>:</strong></label><br />
+					<select id="digisol_recaptcha_version" name="digisol_recaptcha_version">
 						<option value="0"><?php esc_html_e( 'Default Usage', 'wpcf7-recaptcha' ); ?></option>
 						<option value="2" <?php selected( $selection, 2, true ); ?>><?php esc_html_e( 'reCaptcha Version 2', 'wpcf7-recaptcha' ); ?></option>
 					</select>
 					
 					<?php printf( '<p>%s</p>', esc_html__( 'If you\'re not sure if your country blocks Google then you may leave this as default. Otherwise, if your country blocks google.com requests then please select the suggested recaptcha.net alternative below.' ) ); ?>
 					
-					<label for="iqfix_recaptcha_source"><strong><?php esc_html_e( 'Select reCaptcha Source' ); ?>:</strong></label><br />
-					<select id="iqfix_recaptcha_source" name="iqfix_recaptcha_source">
+					<label for="digisol_recaptcha_source"><strong><?php esc_html_e( 'Select reCaptcha Source' ); ?>:</strong></label><br />
+					<select id="digisol_recaptcha_source" name="digisol_recaptcha_source">
 						<option value="google.com">google.com</option>
 						<option value="recaptcha.net" <?php selected( $source, 'recaptcha.net', true ); ?>>recaptcha.net</option>
 					</select>
@@ -299,7 +299,7 @@ Class IQFix_WPCF7_Deity {
 						
 					<?php endif; ?>
 					
-					<?php submit_button( esc_html__( 'Submit', 'wpcf7-recaptcha' ), 'submit', 'iqfix_wpcf7_submit' ); ?>
+					<?php submit_button( esc_html__( 'Submit', 'wpcf7-recaptcha' ), 'submit', 'digisol_wpcf7_submit' ); ?>
 				</form>
 				
 				<div id="iqFacebook">
@@ -350,7 +350,7 @@ Class IQFix_WPCF7_Deity {
 		}
 		
 		// Grab Network Option
-		$network_wpcf7 = get_site_option( 'network_iqfix_recaptcha' );
+		$network_wpcf7 = get_site_option( 'network_digisol_recaptcha' );
 		$network_wpcf7 = array_filter( (array)$network_wpcf7 );
 
 		// Set site keys IF there are no API keys set.
@@ -360,14 +360,14 @@ Class IQFix_WPCF7_Deity {
 			);
 		}
 		
-		// Set IQFix reCaptcha
-		if( ! isset( $value['iqfix_recaptcha'] ) && ! empty( $network_wpcf7['iqfix_recaptcha'] ) ) {
-			$value['iqfix_recaptcha'] = $network_wpcf7['iqfix_recaptcha'];
+		// Set digisol reCaptcha
+		if( ! isset( $value['digisol_recaptcha'] ) && ! empty( $network_wpcf7['digisol_recaptcha'] ) ) {
+			$value['digisol_recaptcha'] = $network_wpcf7['digisol_recaptcha'];
 		}
 		
-		// Set IQFix reCaptcha Source
-		if( ! isset( $value['iqfix_recaptcha_source'] ) && ! empty( $network_wpcf7['recaptcha_source'] ) ) {
-			$value['iqfix_recaptcha_source'] = $network_wpcf7['recaptcha_source'];
+		// Set digisol reCaptcha Source
+		if( ! isset( $value['digisol_recaptcha_source'] ) && ! empty( $network_wpcf7['recaptcha_source'] ) ) {
+			$value['digisol_recaptcha_source'] = $network_wpcf7['recaptcha_source'];
 		}
 		
 		return $value;
@@ -375,7 +375,7 @@ Class IQFix_WPCF7_Deity {
 	}
 
 
-} // END Class IQFix_WPCF7_Deity
+} // END Class digisol_WPCF7_Deity
 
 
 /**
@@ -383,14 +383,14 @@ Class IQFix_WPCF7_Deity {
  * 
  * @return void
  */
-function iqfix_wpcf7_deity_init() {
+function digisol_wpcf7_deity_init() {
 
 	if( class_exists( 'WPCF7' ) ) {
-		IQFix_WPCF7_Deity::register();
+		digisol_WPCF7_Deity::register();
 	}
 
 }
-add_action( 'plugins_loaded', 'iqfix_wpcf7_deity_init' );
+add_action( 'plugins_loaded', 'digisol_wpcf7_deity_init' );
 
 
 /**
@@ -399,9 +399,9 @@ add_action( 'plugins_loaded', 'iqfix_wpcf7_deity_init' );
  * 
  * @return void
  */
-function iqfix_wpcf7_upgrade_recaptcha_v2_v3_removal() {
+function digisol_wpcf7_upgrade_recaptcha_v2_v3_removal() {
 
 	remove_action( 'wpcf7_upgrade', 'wpcf7_upgrade_recaptcha_v2_v3', 10 );
 
 }
-add_action( 'admin_init', 'iqfix_wpcf7_upgrade_recaptcha_v2_v3_removal', 9 );
+add_action( 'admin_init', 'digisol_wpcf7_upgrade_recaptcha_v2_v3_removal', 9 );
