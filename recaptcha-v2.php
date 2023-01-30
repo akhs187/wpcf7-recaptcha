@@ -5,7 +5,7 @@
  */
 
 
-defined( 'ABSPATH' ) or die( 'You cannot be here.' );
+defined( 'ABSPATH' ) or die( 'Δεν μπορείτε να είστε εδώ.' );
 
 
 /**
@@ -13,22 +13,22 @@ defined( 'ABSPATH' ) or die( 'You cannot be here.' );
  * 
  * @return void
  */
-function iqfix_wpcf7_manage_hooks() {
+function digisol_wpcf7_manage_hooks() {
 
 	// reCaptcha Verification
 	remove_filter( 'wpcf7_spam', 'wpcf7_recaptcha_verify_response', 9 );
-	add_filter( 'wpcf7_spam', 'iqfix_wpcf7_recaptcha_check_with_google', 9 );
+	add_filter( 'wpcf7_spam', 'digisol_wpcf7_recaptcha_check_with_google', 9 );
 
 	// reCaptcha Enqueues
 	remove_action( 'wp_enqueue_scripts', 'wpcf7_recaptcha_enqueue_scripts', 10 );
-	add_action( 'wp_enqueue_scripts', 'iqfix_wpcf7_recaptcha_enqueue_scripts', 10 );
+	add_action( 'wp_enqueue_scripts', 'digisol_wpcf7_recaptcha_enqueue_scripts', 10 );
 
 	// reCaptcha Footer Javascript
 	remove_action( 'wp_footer', 'wpcf7_recaptcha_onload_script', 40 );
-	add_action( 'wp_footer', 'iqfix_wpcf7_recaptcha_callback_script', 40 );
+	add_action( 'wp_footer', 'digisol_wpcf7_recaptcha_callback_script', 40 );
 
 }
-add_action( 'setup_theme', 'iqfix_wpcf7_manage_hooks' );
+add_action( 'setup_theme', 'digisol_wpcf7_manage_hooks' );
 
 
 /**
@@ -36,17 +36,17 @@ add_action( 'setup_theme', 'iqfix_wpcf7_manage_hooks' );
  * 
  * @return void
  */
-function iqfix_wpcf7_add_recaptcha_tag() {
+function digisol_wpcf7_add_recaptcha_tag() {
 
 	wpcf7_remove_form_tag( 'recaptcha' );
 	wpcf7_add_form_tag(
 		'recaptcha',
-		'iqfix_wpcf7_recaptcha_form_tag_handler',
+		'digisol_wpcf7_recaptcha_form_tag_handler',
 		array( 'display-block' => true )
 	);
 
 }
-add_action( 'wpcf7_init', 'iqfix_wpcf7_add_recaptcha_tag', 20 );
+add_action( 'wpcf7_init', 'digisol_wpcf7_add_recaptcha_tag', 20 );
 
 
 /**
@@ -58,10 +58,10 @@ add_action( 'wpcf7_init', 'iqfix_wpcf7_add_recaptcha_tag', 20 );
  * 
  * @return void
  */
-function iqfix_wpcf7_recaptcha_enqueue_scripts() {
+function digisol_wpcf7_recaptcha_enqueue_scripts() {
 	
-	$source = WPCF7::get_option( 'iqfix_recaptcha_source' );
-	$source = IQFix_WPCF7_Deity::verify_recaptcha_source( $source );
+	$source = WPCF7::get_option( 'digisol_recaptcha_source' );
+	$source = digisol_WPCF7_Deity::verify_recaptcha_source( $source );
 	
 	$url = sprintf( 'https://www.%s/recaptcha/api.js', $source );
 	$url = add_query_arg( array(
@@ -71,12 +71,12 @@ function iqfix_wpcf7_recaptcha_enqueue_scripts() {
 	), $url );
 
 	wp_register_script( 'google-recaptcha', $url, array(), '2.0', true );
-	wp_localize_script( 'google-recaptcha', 'wpcf7iqfix', array(
+	wp_localize_script( 'google-recaptcha', 'wpcf7digisol', array(
         'recaptcha_empty' => esc_html__( 'Please verify that you are not a robot.', 'wpcf7-recaptcha' ),
     ) );
 
 }
-// See `iqfix_wpcf7_manage_hooks` callback above
+// See `digisol_wpcf7_manage_hooks` callback above
 
 
 /**
@@ -84,7 +84,7 @@ function iqfix_wpcf7_recaptcha_enqueue_scripts() {
  * 
  * @return void
  */
-function iqfix_wpcf7_recaptcha_callback_script() {
+function digisol_wpcf7_recaptcha_callback_script() {
 
 	if ( ! wp_script_is( 'google-recaptcha', 'enqueued' ) ) {
 		return;
@@ -151,7 +151,7 @@ document.addEventListener( 'wpcf7spam', function( event ) {
 		var recaptcha = form.querySelector( 'div.wpcf7-recaptcha' );
 		if( '' === response.value ) {
 			var recaptchaWrapper = recaptcha.parentElement;
-			wpcf7.notValidTip( recaptchaWrapper, wpcf7iqfix.recaptcha_empty );
+			wpcf7.notValidTip( recaptchaWrapper, wpcf7digisol.recaptcha_empty );
 		}
 	} );
 } );
@@ -159,7 +159,7 @@ document.addEventListener( 'wpcf7spam', function( event ) {
 <?php
 
 }
-// See `iqfix_wpcf7_manage_hooks` callback above
+// See `digisol_wpcf7_manage_hooks` callback above
 
 
 /**
@@ -173,7 +173,7 @@ document.addEventListener( 'wpcf7spam', function( event ) {
  * 
  * @return String $html
  */
-function iqfix_wpcf7_recaptcha_form_tag_handler( $tag ) {
+function digisol_wpcf7_recaptcha_form_tag_handler( $tag ) {
 
 	if ( ! wp_script_is( 'google-recaptcha', 'registered' ) ) {
 		wpcf7_recaptcha_enqueue_scripts();
@@ -201,14 +201,14 @@ function iqfix_wpcf7_recaptcha_form_tag_handler( $tag ) {
 	$atts['id'] = $tag->get_id_option();
 
 	$html = sprintf( '<div %1$s></div>', wpcf7_format_atts( $atts ) );
-	$html .= iqfix_wpcf7_recaptcha_noscript(
+	$html .= digisol_wpcf7_recaptcha_noscript(
 		array( 'sitekey' => $atts['data-sitekey'] ) );
 	$html = sprintf( '<div class="wpcf7-form-control-wrap">%s</div>', $html );
 
 	return $html;
 
 }
-// See `iqfix_wpcf7_add_recaptcha_tag` callback above.
+// See `digisol_wpcf7_add_recaptcha_tag` callback above.
 
 
 /**
@@ -222,7 +222,7 @@ function iqfix_wpcf7_recaptcha_form_tag_handler( $tag ) {
  * 
  * @return String
  */
-function iqfix_wpcf7_recaptcha_noscript( $args = '' ) {
+function digisol_wpcf7_recaptcha_noscript( $args = '' ) {
 
 	$args = wp_parse_args( $args, array(
 		'sitekey' => '',
@@ -232,8 +232,8 @@ function iqfix_wpcf7_recaptcha_noscript( $args = '' ) {
 		return;
 	}
 	
-	$source = WPCF7::get_option( 'iqfix_recaptcha_source' );
-	$source = IQFix_WPCF7_Deity::verify_recaptcha_source( $source );
+	$source = WPCF7::get_option( 'digisol_recaptcha_source' );
+	$source = digisol_WPCF7_Deity::verify_recaptcha_source( $source );
 	$url 	= add_query_arg( 'k', $args['sitekey'],
 		sprintf( 'https://www.%s/recaptcha/api/fallback', $source )
 	);
@@ -265,7 +265,7 @@ function iqfix_wpcf7_recaptcha_noscript( $args = '' ) {
  * 
  * @return Boolean $spam
  */
-function iqfix_wpcf7_recaptcha_check_with_google( $spam ) {
+function digisol_wpcf7_recaptcha_check_with_google( $spam ) {
 
 	if ( $spam ) {
 		return $spam;
@@ -283,7 +283,7 @@ function iqfix_wpcf7_recaptcha_check_with_google( $spam ) {
 		return $spam;
 	}
 
-	$recaptcha = IQFix_ReCaptcha::get_instance();
+	$recaptcha = digisol_ReCaptcha::get_instance();
 
 	if( ! $recaptcha->is_active() ) {
 		return $spam;
@@ -296,7 +296,7 @@ function iqfix_wpcf7_recaptcha_check_with_google( $spam ) {
 	return $spam;
 
 }
-// See `iqfix_wpcf7_manage_hooks` callback above
+// See `digisol_wpcf7_manage_hooks` callback above
 
 
 /**
@@ -328,18 +328,18 @@ function wpcf7_recaptcha_response() {
  * 
  * @return void
  */
-function iqfix_wpcf7_add_tag_generator_recaptcha() {
+function digisol_wpcf7_add_tag_generator_recaptcha() {
 
 	$tag_generator = WPCF7_TagGenerator::get_instance();
 	$tag_generator->add(
 		'recaptcha',
 		esc_html__( 'reCaptcha', 'wpcf7-recaptcha' ),
-		'iqfix_wpcf7_tag_generator_recaptcha',
+		'digisol_wpcf7_tag_generator_recaptcha',
 		array( 'nameless' => 1 )
 	);
 
 }
-add_action( 'wpcf7_admin_init', 'iqfix_wpcf7_add_tag_generator_recaptcha', 45 );
+add_action( 'wpcf7_admin_init', 'digisol_wpcf7_add_tag_generator_recaptcha', 45 );
 
 
 /**
@@ -354,10 +354,10 @@ add_action( 'wpcf7_admin_init', 'iqfix_wpcf7_add_tag_generator_recaptcha', 45 );
  * 
  * @return void
  */
-function iqfix_wpcf7_tag_generator_recaptcha( $contact_form, $args = '' ) {
+function digisol_wpcf7_tag_generator_recaptcha( $contact_form, $args = '' ) {
 
 	$args 		= wp_parse_args( $args, array() );
-	$recaptcha 	= IQFix_ReCaptcha::get_instance();
+	$recaptcha 	= digisol_ReCaptcha::get_instance();
 
 	if ( ! $recaptcha->is_active() ) {
 
@@ -456,7 +456,7 @@ function iqfix_wpcf7_tag_generator_recaptcha( $contact_form, $args = '' ) {
 <?php
 
 }
-// See `iqfix_wpcf7_add_tag_generator_recaptcha` callback above
+// See `digisol_wpcf7_add_tag_generator_recaptcha` callback above
 
 
 /**
@@ -465,13 +465,13 @@ function iqfix_wpcf7_tag_generator_recaptcha( $contact_form, $args = '' ) {
  * 
  * @return void
  */
-function iqfix_recaptcha_class_init() {
+function digisol_recaptcha_class_init() {
 
 	if( ! class_exists( 'WPCF7_RECAPTCHA' ) ) {
 		return false;
 	}
 		
-	Class IQFix_ReCaptcha extends WPCF7_RECAPTCHA {
+	Class digisol_ReCaptcha extends WPCF7_RECAPTCHA {
 
 		private static $instance;
 		private $sitekeys;
@@ -498,7 +498,7 @@ function iqfix_recaptcha_class_init() {
 		 * Contact Form 7 v5.0.5 by Takayuki Miyoshi
 		 * contact-form-7\modules\recaptcha.php LN10 
 		 * 
-		 * @return IQFix_ReCaptcha
+		 * @return digisol_ReCaptcha
 		 */
 		public static function get_instance() {
 			if ( empty( self::$instance ) ) {
@@ -585,8 +585,8 @@ function iqfix_recaptcha_class_init() {
 				return $is_human;
 			}
 			
-			$source  = WPCF7::get_option( 'iqfix_recaptcha_source' );
-			$source  = IQFix_WPCF7_Deity::verify_recaptcha_source( $source );
+			$source  = WPCF7::get_option( 'digisol_recaptcha_source' );
+			$source  = digisol_WPCF7_Deity::verify_recaptcha_source( $source );
 			$url 	 = sprintf( 'https://www.%s/recaptcha/api/siteverify', $source );
 			$sitekey = $this->get_sitekey();
 			$secret  = $this->get_secret( $sitekey );
@@ -620,7 +620,7 @@ function iqfix_recaptcha_class_init() {
 	}
 
 }
-add_action( 'init', 'iqfix_recaptcha_class_init', 11 );
+add_action( 'init', 'digisol_recaptcha_class_init', 11 );
 
 
 /**
@@ -628,10 +628,10 @@ add_action( 'init', 'iqfix_recaptcha_class_init', 11 );
  * 
  * @return void
  */
-function iqfix_recaptcha_inline_css() {
+function digisol_recaptcha_inline_css() {
 	
-	$iqfix_css ='.wpcf7 .wpcf7-recaptcha iframe {margin-bottom: 0;}';
-	wp_add_inline_style( 'contact-form-7', $iqfix_css );
+	$digisol_css ='.wpcf7 .wpcf7-recaptcha iframe {margin-bottom: 0;}';
+	wp_add_inline_style( 'contact-form-7', $digisol_css );
 	
 }
-add_action( 'wp_enqueue_scripts', 'iqfix_recaptcha_inline_css' );
+add_action( 'wp_enqueue_scripts', 'digisol_recaptcha_inline_css' );
